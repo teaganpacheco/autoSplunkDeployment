@@ -1,0 +1,67 @@
+--- 
+
+- name: 'Deploy Splunk Management host in Default network'
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: no
+
+  vars: 
+    gcp_project: 
+    gcp_cred_kind: "serviceaccount"
+    gcp_cred_file: "~/autoSplunkDeployment/files/mygcpaccount.json"
+    gcp_region: "us-east1"
+    gcp_zone: "us-east1-b"
+
+  tasks:
+
+  - name: create a disk
+    gcp_compute_disk:
+      name: disk-splk-mgmt-00
+      size_gb: 20
+      source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts
+      zone: "{{ gcp_zone }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: disk
+
+  - name: create a address
+    gcp_compute_address:
+      name: address-splk-mgmt-00
+      network_tier: "STANDARD"
+      region: "{{ gcp_region }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: address
+
+  - name: create a instance
+    gcp_compute_instance:
+      name: splk-mgmt-00
+      project: "{{ gcp_project }}"
+      zone: "{{ gcp_zone }}"
+      machine_type: e2-medium
+      disks:
+      - auto_delete: 'true'
+        boot: 'true'
+        source: "{{ disk }}"
+      metadata: 
+        startup-script: 'useradd -m -U splunk; echo "splunk:sysadmin01" | chpasswd; sudo usermod -aG sudo splunk; cd /home/splunk; sudo mkdir .ssh/; sudo chown -R splunk. /home/splunk/.ssh; cd .ssh/; echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZR6VFmh9nRaP9NJ9djxHHwTqDF2KveZRSoK4cp4irV ansible" > authorized_keys; sudo chown splunk. authorized_keys; sudo chmod 664 authorized_keys; sudo wget -O ~/home/splunk/.bashrc https://sourceforge.net/projects/ultimate-bashrc/files/_bashrc/download; sudo usermod --shell /bin/bash splunk; sudo chmod uo+r /var/log/syslog /var/log/secure /var/log/messages /var/log/auth.log /var/log/audit/faillog /var/log/audit/audit.log' 
+      labels:
+        environment: testing
+        splunk-component: mgmt
+      network_interfaces:
+      - network:
+        access_configs:
+        - name: External NAT
+          nat_ip: "{{ address }}"
+          network_tier: "STANDARD"
+          type: ONE_TO_ONE_NAT
+      tags:
+        items: http-server,https-server
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
