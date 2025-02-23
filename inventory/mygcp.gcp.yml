@@ -1,0 +1,16 @@
+plugin: gcp_compute
+projects:
+
+hostnames:
+  - private_ip
+keyed_groups:
+  - key: zone
+groups:
+  searchheads: "'sh' in name"
+  indexers: "'idx' in name"
+  forwarders: "'fwd' in name"
+  management: "'mgmt' in name"
+  development: "'test' in name"
+filters: []
+auth_kind: serviceaccount
+service_account_file: ~/autoSplunkDeployment/files/mygcpaccount.json
