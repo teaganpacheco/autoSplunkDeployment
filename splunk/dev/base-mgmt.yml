@@ -267,7 +267,7 @@
   - name: Copy Linux Inputs app
     copy: 
       src: ~/autoSplunkDeployment/splunkapps/Splunk_TA_nix.tgz
-      dest: /opt/splunk/etc/master-apps/apps/Splunk_TA_nix.tgz
+      dest: /opt/splunk/etc/master-apps/Splunk_TA_nix.tgz
       backup: yes
       owner: splunk
       mode: '0755'
@@ -275,7 +275,7 @@
   - name: Extract Linux Inputs app
     tags: 
     - install
-    shell: cd /opt/splunk/etc/master-apps/apps/; tar -zxvf Splunk_TA_nix.tgz
+    shell: cd /opt/splunk/etc/master-apps/; tar -zxvf Splunk_TA_nix.tgz
 
 # Deployer related Apps
 
