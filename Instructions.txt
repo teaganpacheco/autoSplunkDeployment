@@ -3,15 +3,15 @@ Splunk on GCP with Ansible
 // 1. Create a free Gmail account 
 // 2. Use Google Cloud for free and make note of the Project Name and Project ID 
 // 3. Create a service account with Roles 'Storage Admin', 'Compute Admin' and 'Compute Storage Admin'. Note the service account's name. 
-// 4. Create a GCP firewall rule for all instances in the network named "splunk-open-ports" with all default values except allow TCP ports 8000, 8089, 9887, and 9997 for the Splunk deployment. 
-// 5. Create private key and download JSON file to '~/autoSplunkDeployment/files/mygcpaccount.json'
+// 4. Create private key and download JSON file to '~/autoSplunkDeployment/files/mygcpaccount.json'
+// 5. Create a GCP firewall rule for all instances in the network named "splunk-open-ports" with all default values except allow TCP ports 8000, 8089, 9887, and 9997 for the Splunk deployment. 
 // 6. Create the Ansible console server with GCP Compute Engine (e2-small - "ansible-console-01" - Ubuntu 20.04LTS @ 10GB disk)
 
 // 7. SSH to "ansible-console-01" and install the following packages with: 
   sudo apt -y update; sudo apt -y install openssh-server; sudo apt -y install git; sudo apt -y install python3-pip; sudo pip3 install ansible; sudo ansible-galaxy collection install google.cloud; pip3 install google-auth
 
-// 8. Clone remote GitHub 'ansible' repository to your Ansible console server with the following command: 
-  cd ~; git clone git@github.com:teaganpacheco/autoSplunkDeployment.git 
+// 8. Clone remote GitHub 'autoSplunkDeployment' repository to your Ansible console server with the following command: 
+  cd ~/; git clone https://github.com/teaganpacheco/autoSplunkDeployment.git 
 
 // 9. Download an improved bashrc for management console with: 
   wget -O ~/.bashrc https://sourceforge.net/projects/ultimate-bashrc/files/_bashrc/download; usermod --shell /bin/bash $(whoami); /bin/bash
