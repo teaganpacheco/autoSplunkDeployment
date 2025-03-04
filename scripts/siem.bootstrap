@@ -1,6 +1,0 @@
-# Production
-
-[deployment-client]
-
-[target-broker:deploymentServer]
-targetUri = <deploymentServer>:8089

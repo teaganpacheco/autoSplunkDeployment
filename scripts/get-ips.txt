@@ -1,6 +1,0 @@
-$hostnames = "CHIIS04.arinc.com","EXSNGSVR01.arinc.com","EXSNGSVR02.arinc.com","EXSNGWIT01.arinc.com","FTWFS04.arinc.com","FTWIS04.arinc.com","FTWPS03.arinc.com","HOUFS03.arinc.com","HOUIS04.arinc.com","HOUPS02.arinc.com","HOUSS13P1.arinc.com","MCLFS04.arinc.com","MCLIS06.arinc.com","MCLUTILITY01.arinc.com","MCLUTILITY02.arinc.com","MIAFS04.arinc.com","MIAIS05.arinc.com","MLVFS04.arinc.com","MLVIS04.arinc.com","MLVPS03.arinc.com","NYCFS04.arinc.com","NYCIS04.arinc.com","SFOFS04.arinc.com","SFOIS04.arinc.com","SFOPS03.arinc.com","SNGFS04.arinc.com","SNGIS04.arinc.com","TULFS04.arinc.com","chifs04.arinc.com","csgc12416op001.arinc.com","cusc12461fp001.arinc.com","nycfs04-new.arinc.com"
-$output = foreach ($name in $hostnames)
-{
-ping $name | Select-String -Pattern 'statistics'
-}
-$output | Out-File -FilePath -Append .\hims_ufs-8-7.txt
