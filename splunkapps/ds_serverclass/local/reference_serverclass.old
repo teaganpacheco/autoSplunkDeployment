@@ -1,0 +1,477 @@
+#####
+# Configure the UF Inputs and Defaults here
+#####
+
+[global]
+crossServerChecksum = true
+
+[serverClass:ufDefault]
+whitelist.0 = *
+
+[serverClass:ufDefault:app:a_rtx_uf_deploymentclient]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:ufDefault:app:a_rtx_enterprise_outputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:ufDefault:app:disable_uf_8089]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+# Legacy deployment client folders to remove old configurations post move
+[serverClass:ufDefault:app:utc_splk_all_deploymentclient]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:ufDefault:app:z_deploymentclient_redirect]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:ufDefault:app:Raytheon_COE_Deployment_Client]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+##
+# Splunk Enterprise Licensing
+## 
+
+[serverClass:splkentlicense]
+whitelist.0 = splk-*
+blacklist.0 = splk-fwdr-*
+
+[serverClass:splkentlicense:app:all_license]
+restartSplunkWeb = 0 
+restartSplunkd = 1 
+stateOnClient = enabled
+
+[serverClass:splkentlicense:app:all_iowait]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:splkentlicense:app:all_minDiskUsage]
+restartSplunkWeb = 0
+restartSplunkd = 1 
+stateOnClient = enabled
+
+# [serverClass:splkentlicense:app:uf_base]
+# restartSplunkWeb = 0
+# restartSplunkd = 1
+# stateOnClient = enabled
+
+##
+# Indexer Clustering setup
+##
+
+[serverClass:idxcluster]
+whitelist.0 = splk-idx-*
+machineTypesFilter = linux-*
+
+[serverClass:idxcluster:app:idxclustering]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+##
+# Search Head Clustering setup
+##
+
+[serverClass:shcluster]
+whitelist.0 = splk-sh-*
+machineTypesFilter = linux-*
+
+[serverClass:shcluster:app:shclustering]
+excludeFromUpdate=$app_root$/local
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+##
+# Outputs with Indexer Discovery
+##
+
+[serverClass:base_outputs]
+blacklist.0 = splk-idx-*
+whitelist.0 = *
+
+[serverClass:base_outputs:app:all_outputs]
+restartSplunkWeb = 0 
+restartSplunkd = 1 
+stateOnClient = enabled
+
+##
+# Input Entries
+##
+
+[serverClass:xeta_connectivity_windows]
+whitelist.0 = AI940204*
+whitelist.1 = RA094900*
+machineTypesFilter = windows-*
+
+[serverClass:xeta_connectivity_windows:app:RTX_xeta_connectivity_windows]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+# nix and windows operating system logs
+[serverClass:nix]
+whitelist.0 = *
+machineTypesFilter = linux-*,aix-*,sunos-*,darwin-*,freebsd-*,hp-ux-*
+
+[serverClass:nix:app:Splunk_TA_nix]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:windows]
+whitelist.0 = *
+machineTypesFilter = windows-*
+
+[serverClass:windows:app:Splunk_TA_windows]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:atlassian]
+whitelist.0 = VMQ7981PD002
+whitelist.1 = VMQ7981PA0(13|14|83|84)
+
+[serverClass:atlassian:app:RTX_atlassian_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:doors]
+whitelist.0 = puseha(gv|ke)
+
+[serverClass:doors:app:RTX_doors_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:emos]
+whitelist.0 = wplrzd0d*
+whitelist.1 = wplrzk0p*
+whitelist.2 = wplrzk0o*
+
+[serverClass:emos:app:RTX_emos_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:isat]
+whitelist.0 = CRNTCT304*
+whitelist.1 = crntct305*
+whitelist.2 = crntct3dev01*
+
+[serverClass:isat:app:RTX_isat_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:apache]
+whitelist.0 = crlxeti03*
+
+[serverClass:apache:app:RTX_apache_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:atlas]
+whitelist.0 = PUSSBB87*
+whitelist.1 = PUSSBB88*
+whitelist.2 = PUSDLB57*
+
+[serverClass:atlas:app:RTX_atlas_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:bmw]
+whitelist.0 = crntct305*
+
+[serverClass:bmw:app:RTX_bmw_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:granta]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/granta.list
+
+[serverClass:granta:app:RTX_granta_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:misp]
+whitelist.0 = vmq7981pa427
+whitelist.1 = vmq7981pa428
+
+[serverClass:misp:app:RTX_misp_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:mssql]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/mssql.list
+
+[serverClass:mssql:app:RTX_mssql_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:pars]
+whitelist.0 = CRNTCT304*
+whitelist.1 = crntct305*
+whitelist.2 = crntct3dev01*
+whitelist.3 = crntct303*
+whitelist.4 = crntct3sql01*
+
+[serverClass:pars:app:RTX_pars_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:pyrits]
+whitelist.0 = fslvmehwebp1
+whitelist.1 = fslvmehwebt1
+
+[serverClass:pyrits:app:RTX_pyrits_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:qlik]
+whitelist.0 = pussb(b21|b26|d24|d25|d49)
+
+[serverClass:qlik:app:RTX_qlik_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:seal]
+whitelist.0 = psblpsemap001
+
+[serverClass:seal:app:RTX_seal_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:sharepoint]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/sharepoint.list
+
+[serverClass:sharepoint:app:RTX_sharepoint_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:supplierPortal]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/supplierPortal.list
+
+[serverClass:supplierPortal:app:RTX_supplierPortal_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:artifactory]
+whitelist.0 = *_artifactory*
+
+[serverClass:artifactory:app:RTX_artifactory_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:symantec_epav]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/win_sepm.list
+
+[serverClass:symantec_epav:app:RTX_symantec_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:ca-sso_nix]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/ca-sso.list
+machineTypesFilter = linux-*,aix-*,sunos-*,darwin-*,freebsd-*,hp-ux-*
+
+[serverClass:ca-sso_nix:app:RTX_ca-ssoNix_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:ca-sso_win]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/ca-sso.list
+machineTypesFilter = windows-*
+
+[serverClass:ca-sso_win:app:RTX_ca-ssoWin_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:uf-bu-test]
+whitelist.0 = AI940204*
+whitelist.1 = AI944765*
+whitelist.2 = AI985302*
+machineTypesFilter = *
+
+[serverClass:uf-bu-test:app:rtx_meta_utc]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:microsoft-iis]
+machineTypesFilter = windows-*
+whitelist.0 = *
+
+[serverClass:microsoft-iis:app:RTX_microsoft-iis_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:adfs]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/adfs.list
+
+[serverClass:adfs:app:RTX_adfs_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:dhpm]
+whitelist.0 = WCAHQA2D*
+whitelist.1 = WCALQABI*
+
+[serverClass:dphm:app:RTX_dhpm_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:voyence]
+whitelist.0 = uusnwa70*
+whitelist.1 = uusnwa72*
+
+[serverClass:voyence:app:RTX_voyence_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:axonius]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/axonius.list
+
+[serverClass:axonius:app:RTX_axonius_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:confluence6159]
+whitelist.0 = PUSEHF72*
+whitelist.1 = PUSEHF73*
+
+[serverClass:confluence6159:app:RTX_confluence6159_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:etq-reliance]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/etq-reliance.list
+
+[serverClass:etq-reliance:app:RTX_etq_reliance_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:hdfs]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/hdfs_servers.txt
+
+[serverClass:hdfs:app:RTX_hdfs_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:impact]
+whitelist.0 = crus07v1*
+whitelist.1 = crus02v1*
+
+[serverClass:impact:app:RTX_impact_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:jenkins]
+whitelist.0 = 10.158.22.121
+whitelist.1 = *_jenkins*
+
+[serverClass:jenkins:app:RTX_jenkins_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:odm]
+whitelist.0 = psblpodmap001*
+
+[serverClass:odm:app:RTX_odm_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:xclass]
+whitelist.0 = gush0w11*
+whitelist.1 = gush1am5*
+whitelist.2 = gush1am1*
+
+[serverClass:xclass:app:RTX_xclass_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:radiantlogic]
+whitelist.from_pathname = etc/apps/rtx_serverclass_umbrella/lists/inclusion/radiantlogic.list
+
+[serverClass:radiantlogic:app:RTX_radiantlogic_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:jama]
+whitelist.0 = *jama*
+
+[serverClass:jama:app:RTX_jama_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:rapid7]
+machineTypesFilter = linux-x86_64
+whitelist.0 = crulr7con*
+
+[serverClass:rapid7:app:RTX_rapid7_nexpose_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:edex]
+whitelist.0 = PUSEHAEZ
+
+[serverClass:edex:app:RTX_edex_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:windowsdefender]
+whitelist.0 = aws-evtcollect*
+
+[serverClass:windowsdefender:app:RTX_coe_aws_sysmon_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled
+
+[serverClass:windowsdefender:app:RTX_coe_windowsdefender_inputs]
+restartSplunkWeb = 0
+restartSplunkd = 1
+stateOnClient = enabled

@@ -1,6 +1,6 @@
 plugin: gcp_compute
 projects:
-
+  - cousecareers01
 hostnames:
   - private_ip
 keyed_groups:
