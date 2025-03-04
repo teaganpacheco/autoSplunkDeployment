@@ -1,0 +1,396 @@
+---
+
+- hosts: management_combo
+  become: true
+  tasks:
+
+  - name: Download Splunk Enterprise Installation File
+    unarchive:
+      src: https://download.splunk.com/products/splunk/releases/8.2.6.1/linux/splunk-8.2.6.1-5f0da8f6e22c-Linux-x86_64.tgz
+      dest: /opt/
+      remote_src: yes
+      owner: splunk
+      group: splunk
+      mode: 0755
+
+  - name: Copy default Splunk admin file with owner and permissions
+    copy:
+      src: ~/autoSplunkDeployment/files/user-seed.conf
+      dest: /opt/splunk/etc/system/local/user-seed.conf
+      backup: yes
+      owner: splunk
+      mode: '0644'
+    register: userseedconf
+
+  - name: Set Splunk User for Splunk Service
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc; echo 'SPLUNK_OS_USER=splunk' >> splunk-launch.conf
+
+  - name: Accept License
+    tags: 
+    - install
+    shell: /opt/splunk/bin/splunk start --accept-license --answer-yes
+
+  - name: Enable init script
+    tags: 
+    - install
+    shell: /opt/splunk/bin/splunk enable boot-start 
+
+  - name: Copy IOWait app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/all_iowait.tgz
+      dest: /opt/splunk/etc/apps/all_iowait.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract IOWait app
+    tags: 
+    - install 
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf all_iowait.tgz
+
+  - name: Copy All Outputs app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/all_outputs.tgz
+      dest: /opt/splunk/etc/apps/all_outputs.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract All Outputs app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf all_outputs.tgz
+
+  - name: Copy Enable Splunk Web SSL app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/mgmt_splunkwebssl.tgz
+      dest: /opt/splunk/etc/apps/mgmt_splunkwebssl.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Enable Splunk Web SSL app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf mgmt_splunkwebssl.tgz
+
+  - name: Copy Linux Inputs app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/Splunk_TA_nix.tgz
+      dest: /opt/splunk/etc/apps/Splunk_TA_nix.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Linux Inputs app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf Splunk_TA_nix.tgz
+
+# Deployment Server related Apps
+
+  - name: Copy DS Serverclass app
+    copy:
+      src: ~/autoSplunkDeployment/splunkapps/ds_serverclass.tgz
+      dest: /opt/splunk/etc/apps/ds_serverclass.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract DS Serverclass app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf ds_serverclass.tgz
+
+  - name: Copy z_deploymentclient app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/z_deploymentclient.tgz
+      dest: /opt/splunk/etc/deployment-apps/z_deploymentclient.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract z_deploymentclient app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/deployment-apps/; tar -zxvf z_deploymentclient.tgz
+
+  - name: Copy All Outputs app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/all_outputs.tgz
+      dest: /opt/splunk/etc/deployment-apps/all_outputs.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract All Outputs app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/deployment-apps/; tar -zxvf all_outputs.tgz
+
+  - name: Copy SPLK ENT Licensing app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/all_license.tgz
+      dest: /opt/splunk/etc/deployment-apps/all_license.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract SPLK ENT Licensing app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/deployment-apps/; tar -zxvf all_license.tgz
+
+  - name: Copy Linux Inputs app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/Splunk_TA_nix.tgz
+      dest: /opt/splunk/etc/deployment-apps/Splunk_TA_nix.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Linux Inputs app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/deployment-apps/; tar -zxvf Splunk_TA_nix.tgz
+
+# License Manager related Apps
+
+  - name: Copy License Manager app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/mgmt_license.tgz
+      dest: /opt/splunk/etc/apps/mgmt_license.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract License Manager app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf mgmt_license.tgz
+
+  - name: Create Enterprise License directory
+    tags: 
+    - install
+    shell: mkdir -p /opt/splunk/etc/licenses/enterprise/
+
+  - name: Copy License file
+    copy: 
+      src: ~/autoSplunkDeployment/files/Splunk10GB.License
+      dest: /opt/splunk/etc/licenses/enterprise/Splunk.lic
+      backup: yes
+      owner: splunk
+      mode: '0644'
+
+# Cluster Manager related Apps
+
+  - name: Copy Cluster Manager app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/mgmt_cmanager.tgz
+      dest: /opt/splunk/etc/apps/mgmt_cmanager.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Cluster Manager app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf mgmt_cmanager.tgz
+
+  - name: Copy Indexer Cluster Discovery app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/mgmt_idx_discovery.tgz
+      dest: /opt/splunk/etc/apps/mgmt_idx_discovery.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Indexer Cluster Discovery app
+    tags:
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf mgmt_idx_discovery.tgz 
+
+  - name: Copy SPLK ENT Licensing app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/all_license.tgz
+      dest: /opt/splunk/etc/master-apps/all_license.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract SPLK ENT Licensing app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/master-apps/; tar -zxvf all_license.tgz
+
+  - name: Copy Indexer Receiving app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/idx_receiving.tgz
+      dest: /opt/splunk/etc/master-apps/idx_receiving.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Indexer Receiving app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/master-apps/; tar -zxvf idx_receiving.tgz
+
+  - name: Copy Indexer Indexes app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/idx_indexes.tgz
+      dest: /opt/splunk/etc/master-apps/idx_indexes.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Indexer Indexes app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/master-apps/; tar -zxvf idx_indexes.tgz
+
+  - name: Copy Indexer IOWait app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/all_iowait.tgz
+      dest: /opt/splunk/etc/master-apps/all_iowait.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Indexer IOWait app
+    tags: 
+    - install 
+    shell: cd /opt/splunk/etc/master-apps/; tar -zxvf all_iowait.tgz
+
+  - name: Copy Linux Inputs app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/Splunk_TA_nix.tgz
+      dest: /opt/splunk/etc/master-apps/apps/Splunk_TA_nix.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Linux Inputs app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/master-apps/apps/; tar -zxvf Splunk_TA_nix.tgz
+
+# Deployer related Apps
+
+  - name: Copy Deployer SH Clustering app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/shcd_securityKey.tgz
+      dest: /opt/splunk/etc/apps/shcd_securityKey.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Deployer SH Clustering app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf shcd_securityKey.tgz
+
+  - name: Copy Search Head Clustering app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/sh_clustering.tgz
+      dest: /opt/splunk/etc/shcluster/apps/sh_clustering.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Search Head Clustering app
+    tags:
+    - install
+    shell: cd /opt/splunk/etc/shcluster/apps/; tar -zxvf sh_clustering.tgz
+
+  - name: Copy Search Head Clustering Initialization app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/sh_init_clustering.tgz
+      dest: /opt/splunk/etc/sh_init_clustering.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Search Head Clustering Initialization app
+    tags:
+    - install
+    shell: cd /opt/splunk/etc/; tar -zxvf sh_init_clustering.tgz
+
+  - name: Copy SPLK ENT Licensing app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/all_license.tgz
+      dest: /opt/splunk/etc/shcluster/apps/all_license.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract SPLK ENT Licensing app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/shcluster/apps/; tar -zxvf all_license.tgz
+
+  - name: Copy All minDiskUsage app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/all_minDiskUsage.tgz
+      dest: /opt/splunk/etc/shcluster/apps/all_minDiskUsage.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract All minDiskUsage app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/shcluster/apps/; tar -zxvf all_minDiskUsage.tgz
+
+  - name: Copy All IOWait app
+    copy:
+      src: ~/autoSplunkDeployment/splunkapps/all_iowait.tgz
+      dest: /opt/splunk/etc/shcluster/apps/all_iowait.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract All IOWait app
+    tags:
+    - install
+    shell: cd /opt/splunk/etc/shcluster/apps/; tar -zxvf all_iowait.tgz
+
+  - name: Copy All Outputs app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/all_outputs.tgz
+      dest: /opt/splunk/etc/shcluster/apps/all_outputs.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract All Outputs app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/shcluster/apps/; tar -zxvf all_outputs.tgz
+
+  - name: Copy Linux Inputs app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/Splunk_TA_nix.tgz
+      dest: /opt/splunk/etc/shcluster/apps/Splunk_TA_nix.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Linux Inputs app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/shcluster/apps/; tar -zxvf Splunk_TA_nix.tgz
+
+# Final commands
+
+  - name: Adjust splunk folder permissions
+    tags:
+    - install
+    shell: sudo chown -R splunk. /opt/splunk/
+
+  - name: Restart Splunk Service
+    tags: 
+    - install
+    shell: /opt/splunk/bin/splunk restart

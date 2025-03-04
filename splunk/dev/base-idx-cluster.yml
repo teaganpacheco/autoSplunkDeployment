@@ -1,0 +1,74 @@
+---
+
+- hosts: idx_cluster_members 
+  become: true
+  tasks:
+
+  - name: Download Splunk Enterprise Installation File
+    unarchive:
+      src: https://download.splunk.com/products/splunk/releases/8.2.6.1/linux/splunk-8.2.6.1-5f0da8f6e22c-Linux-x86_64.tgz
+      dest: /opt/
+      remote_src: yes
+      owner: splunk
+      group: splunk
+      mode: 0755
+
+  - name: Copy default Splunk admin file with owner and permissions
+    copy:
+      src: ~/ansible/files/user-seed.conf
+      dest: /opt/splunk/etc/system/local/user-seed.conf
+      backup: yes
+      owner: splunk
+      mode: '0644'
+    register: userseedconf
+  
+  - name: Set Splunk User for Splunk Service
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc; echo 'SPLUNK_OS_USER=splunk' >> splunk-launch.conf
+
+  - name: Accept License
+    tags: 
+    - install
+    shell: /opt/splunk/bin/splunk start --accept-license --answer-yes
+
+  - name: Enable init script
+    tags: 
+    - install
+    shell: /opt/splunk/bin/splunk enable boot-start 
+
+  - name: Copy Indexer Clustering app
+    copy: 
+      src: ~/ansible/splunkapps/idx_clustering.tgz
+      dest: /opt/splunk/etc/apps/idx_clustering.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Indexer Clustering app
+    tags:
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf idx_clustering.tgz
+
+  - name: Copy Indexer No Splunk Web app
+    copy: 
+      src: ~/ansible/splunkapps/idx_splunkweb.tgz
+      dest: /opt/splunk/etc/apps/idx_splunkweb.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Indexer No Splunk Web app
+    tags: 
+    - install 
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf idx_splunkweb.tgz
+   
+  - name: Adjust splunk folder permissions
+    tags:
+    - install
+    shell: sudo chown -R splunk. /opt/splunk/
+
+  - name: Restart Splunk Service
+    tags: 
+    - install
+    shell: /opt/splunk/bin/splunk restart

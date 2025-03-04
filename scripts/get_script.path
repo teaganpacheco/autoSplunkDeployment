@@ -1,0 +1,1 @@
+C:\Windows\System32\WindowsPowerShell\v1.0\PowerShell.exe -ExecutionPolicy Unrestricted -command "& 'C:\Program Files\SplunkUniversalForwarder\etc\apps\RTX_xeta_clean_windows\bin\splunk_xeta_cleanse.ps1'"

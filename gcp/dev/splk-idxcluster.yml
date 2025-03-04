@@ -1,0 +1,178 @@
+--- 
+
+- name: 'Deploy three indexers into GCP'
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: no
+
+  vars: 
+    gcp_project: "nasdaqhigh-456"
+    gcp_cred_kind: "serviceaccount"
+    gcp_cred_file: "~/ansible/files/mygcpaccount.json"
+    gcp_region: "us-west1"
+    gcp_zone: "us-west1-a"
+
+
+  tasks:
+
+  - name: create idx01 disk
+    gcp_compute_disk:
+      name: disk-splk-idx-01
+      size_gb: 50
+      source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts
+      zone: "{{ gcp_zone }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: disk1
+
+  - name: create idx02 disk
+    gcp_compute_disk:
+      name: disk-splk-idx-02
+      size_gb: 50
+      source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts
+      zone: "{{ gcp_zone }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: disk2
+
+  - name: create idx03 disk
+    gcp_compute_disk:
+      name: disk-splk-idx-03
+      size_gb: 50
+      source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts
+      zone: "{{ gcp_zone }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: disk3
+
+    #  - name: create a network
+    #  gcp_compute_network:
+    #  name: network-instance-02
+    #  auto_create_subnetworks: 'true'
+    #  project: "{{ gcp_project }}"
+    #  auth_kind: "{{ gcp_cred_kind }}"
+    #  service_account_file: "{{ gcp_cred_file }}"
+    #   state: present
+    #  register: network
+
+  - name: create idx01 address
+    gcp_compute_address:
+      name: addr-splk-idx-01
+      network_tier: "STANDARD"
+      region: "{{ gcp_region }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: address1
+
+  - name: create idx02 address
+    gcp_compute_address:
+      name: addr-splk-idx-02
+      network_tier: "STANDARD"
+      region: "{{ gcp_region }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: address2
+
+  - name: create idx03 address
+    gcp_compute_address:
+      name: addr-splk-idx-03
+      network_tier: "STANDARD"
+      region: "{{ gcp_region }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: address3
+
+  - name: create idx01 instance
+    gcp_compute_instance:
+      name: splk-idx-01
+      project: "{{ gcp_project }}"
+      zone: "{{ gcp_zone }}"
+      machine_type: e2-medium
+      disks:
+      - auto_delete: 'true'
+        boot: 'true'
+        source: "{{ disk1 }}"
+      metadata:
+        startup-script: 'useradd -m -U splunk; echo "splunk:sysadmin01" | chpasswd; sudo usermod -aG sudo splunk; cd /home/splunk; sudo mkdir .ssh/; sudo chown -R splunk. /home/splunk/.ssh; cd .ssh/; echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZR6VFmh9nRaP9NJ9djxHHwTqDF2KveZRSoK4cp4irV ansible" > authorized_keys; sudo chown splunk. authorized_keys; sudo chmod 664 authorized_keys; sudo wget -O /home/splunk/.bashrc https://sourceforge.net/projects/ultimate-bashrc/files/_bashrc/download; sudo usermod --shell /bin/bash splunk; sudo chmod uo+r /var/log/syslog /var/log/secure /var/log/messages /var/log/auth.log /var/log/audit/faillog /var/log/audit/audit.log'
+      labels:
+        environment: testing
+        splunk-component: idx
+      network_interfaces:
+      - network:
+        access_configs:
+        - name: External NAT
+          nat_ip: "{{ address1 }}"
+          network_tier: "STANDARD"
+          type: ONE_TO_ONE_NAT
+      tags:
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+      
+  - name: create idx02 instance
+    gcp_compute_instance:
+      name: splk-idx-02
+      project: "{{ gcp_project }}"
+      zone: "{{ gcp_zone }}"
+      machine_type: e2-medium
+      disks:
+      - auto_delete: 'true'
+        boot: 'true'
+        source: "{{ disk2 }}"
+      metadata:
+        startup-script: 'useradd -m -U splunk; echo "splunk:sysadmin01" | chpasswd; sudo usermod -aG sudo splunk; cd /home/splunk; sudo mkdir .ssh/; sudo chown -R splunk. /home/splunk/.ssh; cd .ssh/; echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZR6VFmh9nRaP9NJ9djxHHwTqDF2KveZRSoK4cp4irV ansible" > authorized_keys; sudo chown splunk. authorized_keys; sudo chmod 664 authorized_keys; sudo wget -O /home/splunk/.bashrc https://sourceforge.net/projects/ultimate-bashrc/files/_bashrc/download; sudo usermod --shell /bin/bash splunk; sudo chmod uo+r /var/log/syslog /var/log/secure /var/log/messages /var/log/auth.log /var/log/audit/faillog /var/log/audit/audit.log'
+      labels:
+        environment: testing
+        splunk-component: idx
+      network_interfaces:
+      - network:
+        access_configs:
+        - name: External NAT
+          nat_ip: "{{ address2 }}"
+          network_tier: "STANDARD"
+          type: ONE_TO_ONE_NAT
+      tags:
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+      
+  - name: create idx03 instance
+    gcp_compute_instance:
+      name: splk-idx-03
+      project: "{{ gcp_project }}"
+      zone: "{{ gcp_zone }}"
+      machine_type: e2-medium
+      disks:
+      - auto_delete: 'true'
+        boot: 'true'
+        source: "{{ disk3 }}"
+      metadata:
+        startup-script: 'useradd -m -U splunk; echo "splunk:sysadmin01" | chpasswd; sudo usermod -aG sudo splunk; cd /home/splunk; sudo mkdir .ssh/; sudo chown -R splunk. /home/splunk/.ssh; cd .ssh/; echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZR6VFmh9nRaP9NJ9djxHHwTqDF2KveZRSoK4cp4irV ansible" > authorized_keys; sudo chown splunk. authorized_keys; sudo chmod 664 authorized_keys; sudo wget -O /home/splunk/.bashrc https://sourceforge.net/projects/ultimate-bashrc/files/_bashrc/download; sudo usermod --shell /bin/bash splunk; sudo chmod uo+r /var/log/syslog /var/log/secure /var/log/messages /var/log/auth.log /var/log/audit/faillog /var/log/audit/audit.log'
+      labels:
+        environment: testing
+        splunk-component: idx
+      network_interfaces:
+      - network:
+        access_configs:
+        - name: External NAT
+          nat_ip: "{{ address3 }}"
+          network_tier: "STANDARD"
+          type: ONE_TO_ONE_NAT
+      tags:
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+      

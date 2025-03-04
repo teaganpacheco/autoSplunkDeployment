@@ -1,0 +1,8 @@
+# Breakdown of the following command
+for i in `cat somefile`; do echo -n $i; echo -n ": "; dig @147.23.140.10 -x $i +short; echo ""; done
+# For loop
+# i = item in 'file with IPs' 
+# perform dig
+# dig @<DNS server> 
+# parsing -x $i +short
+  

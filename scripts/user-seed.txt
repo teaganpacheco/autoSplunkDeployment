@@ -1,0 +1,3 @@
+# this is the draft to create a user-seed.conf file to deploy out too all hosts without having to hardcode clear-text passwords into my Splunk configurations. 
+
+touch test.conf; echo "[user_info]" > test.conf; echo "USERNAME = teagan" >> test.conf; echo "PASSWORD = $(/Applications/SplunkForwarder/bin/splunk hash-passwd 'teagan123')" | tee -a test.conf
