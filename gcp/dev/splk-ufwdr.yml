@@ -1,0 +1,166 @@
+--- 
+
+- name: 'Deploy Linux-based Splunk Universal Forwarder VM in Default network'
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: no
+
+  vars: 
+    gcp_project: "nasdaqhigh-456-451020"
+    gcp_cred_kind: "serviceaccount"
+    gcp_cred_file: "~/ansible/files/mygcpaccount.json"
+    gcp_region: "us-south1"
+    gcp_zone: "us-south1-a"
+
+  tasks:
+
+  - name: create ufwdr01 disk
+    gcp_compute_disk:
+      name: disk-splk-ufwdr-01
+      size_gb: 10
+      source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts
+      zone: "{{ gcp_zone }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: disk1
+
+  - name: create ufwdr02 disk
+    gcp_compute_disk:
+      name: disk-splk-ufwdr-02
+      size_gb: 10
+      source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts
+      zone: "{{ gcp_zone }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: disk2
+
+  - name: create ufwdr03 disk
+    gcp_compute_disk:
+      name: disk-splk-ufwdr-03
+      size_gb: 10
+      source_image: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts
+      zone: "{{ gcp_zone }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: disk3
+
+  - name: create ufwdr01 address
+    gcp_compute_address:
+      name: addr-splk-ufwdr-01
+      network_tier: "STANDARD"
+      region: "{{ gcp_region }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: address1
+
+  - name: create ufwdr02 address
+    gcp_compute_address:
+      name: addr-splk-ufwdr-02
+      network_tier: "STANDARD"
+      region: "{{ gcp_region }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: address2
+
+  - name: create ufwdr03 address
+    gcp_compute_address:
+      name: addr-splk-ufwdr-03
+      network_tier: "STANDARD"
+      region: "{{ gcp_region }}"
+      project: "{{ gcp_project }}"
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+    register: address3
+
+  - name: create ufwdr01 instance
+    gcp_compute_instance:
+      name: splk-ufwdr-01
+      project: "{{ gcp_project }}"
+      zone: "{{ gcp_zone }}"
+      machine_type: e2-small
+      disks:
+      - auto_delete: 'true'
+        boot: 'true'
+        source: "{{ disk1 }}"
+      metadata:
+        startup-script: 'useradd -m -U splunk; echo "splunk:sysadmin01" | chpasswd; sudo usermod -aG sudo splunk; cd /home/splunk; sudo mkdir .ssh/; sudo chown -R splunk. /home/splunk/.ssh; cd .ssh/; echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZR6VFmh9nRaP9NJ9djxHHwTqDF2KveZRSoK4cp4irV ansible" > authorized_keys; sudo chown splunk. authorized_keys; sudo chmod 664 authorized_keys; sudo wget -O /home/splunk/.bashrc https://sourceforge.net/projects/ultimate-bashrc/files/_bashrc/download; sudo usermod --shell /bin/bash splunk; sudo chmod uo+r /var/log/syslog /var/log/secure /var/log/messages /var/log/auth.log /var/log/audit/faillog /var/log/audit/audit.log'
+      labels:
+        environment: testing
+        splunk-component: fwdr
+      network_interfaces:
+      - network:
+        access_configs:
+        - name: External NAT
+          nat_ip: "{{ address1 }}"
+          network_tier: "STANDARD"
+          type: ONE_TO_ONE_NAT
+      tags:
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+      
+  - name: create ufwdr02 instance
+    gcp_compute_instance:
+      name: splk-ufwdr-02
+      project: "{{ gcp_project }}"
+      zone: "{{ gcp_zone }}"
+      machine_type: e2-small
+      disks:
+      - auto_delete: 'true'
+        boot: 'true'
+        source: "{{ disk2 }}"
+      metadata:
+        startup-script: 'useradd -m -U splunk; echo "splunk:sysadmin01" | chpasswd; sudo usermod -aG sudo splunk; cd /home/splunk; sudo mkdir .ssh/; sudo chown -R splunk. /home/splunk/.ssh; cd .ssh/; echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZR6VFmh9nRaP9NJ9djxHHwTqDF2KveZRSoK4cp4irV ansible" > authorized_keys; sudo chown splunk. authorized_keys; sudo chmod 664 authorized_keys; sudo wget -O /home/splunk/.bashrc https://sourceforge.net/projects/ultimate-bashrc/files/_bashrc/download; sudo usermod --shell /bin/bash splunk; sudo chmod uo+r /var/log/syslog /var/log/secure /var/log/messages /var/log/auth.log /var/log/audit/faillog /var/log/audit/audit.log'
+      labels:
+        environment: testing
+        splunk-component: fwdr
+      network_interfaces:
+      - network:
+        access_configs:
+        - name: External NAT
+          nat_ip: "{{ address2 }}"
+          network_tier: "STANDARD"
+          type: ONE_TO_ONE_NAT
+      tags:
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present
+
+  - name: create ufwdr03 instance
+    gcp_compute_instance:
+      name: splk-ufwdr-03
+      project: "{{ gcp_project }}"
+      zone: "{{ gcp_zone }}"
+      machine_type: e2-small
+      disks:
+      - auto_delete: 'true'
+        boot: 'true'
+        source: "{{ disk3 }}"
+      metadata:
+        startup-script: 'useradd -m -U splunk; echo "splunk:sysadmin01" | chpasswd; sudo usermod -aG sudo splunk; cd /home/splunk; sudo mkdir .ssh/; sudo chown -R splunk. /home/splunk/.ssh; cd .ssh/; echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZR6VFmh9nRaP9NJ9djxHHwTqDF2KveZRSoK4cp4irV ansible" > authorized_keys; sudo chown splunk. authorized_keys; sudo chmod 664 authorized_keys; sudo wget -O /home/splunk/.bashrc https://sourceforge.net/projects/ultimate-bashrc/files/_bashrc/download; sudo usermod --shell /bin/bash splunk; sudo chmod uo+r /var/log/syslog /var/log/secure /var/log/messages /var/log/auth.log /var/log/audit/faillog /var/log/audit/audit.log'
+      labels:
+        environment: testing
+        splunk-component: fwdr
+      network_interfaces:
+      - network:
+        access_configs:
+        - name: External NAT
+          nat_ip: "{{ address3 }}"
+          network_tier: "STANDARD"
+          type: ONE_TO_ONE_NAT
+      tags:
+      auth_kind: "{{ gcp_cred_kind }}"
+      service_account_file: "{{ gcp_cred_file }}"
+      state: present

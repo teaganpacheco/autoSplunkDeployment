@@ -1,0 +1,68 @@
+---
+
+- hosts: sh_cluster_members
+  become: true
+  tasks:
+
+  - name: Download Splunk Enterprise Installation File
+    unarchive:
+      src: https://download.splunk.com/products/splunk/releases/8.2.6.1/linux/splunk-8.2.6.1-5f0da8f6e22c-Linux-x86_64.tgz
+      dest: /opt/
+      remote_src: yes
+      owner: splunk
+      group: splunk
+      mode: 0755
+
+  - name: Copy default Splunk admin file with owner and permissions
+    copy:
+      src: ~/ansible/files/user-seed.conf
+      dest: /opt/splunk/etc/system/local/user-seed.conf
+      backup: yes
+      owner: splunk
+      mode: '0644'
+    register: userseedconf
+  
+  - name: Set Splunk User for Splunk Service
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc; echo 'SPLUNK_OS_USER=splunk' >> splunk-launch.conf
+
+  - name: Accept License
+    tags: 
+    - install
+    shell: /opt/splunk/bin/splunk start --accept-license --answer-yes
+
+  - name: Enable init script
+    tags: 
+    - install
+    shell: /opt/splunk/bin/splunk enable boot-start 
+    
+  - name: copy host list to target
+    copy:
+      src: ~/ansible/inventory/new-tmpHosts.list
+      dest: "/opt/splunk/new-tmpHosts.list"
+      owner: splunk
+      group: splunk
+
+#  - name: Copy Search Head Clustering initialization app
+#    copy: 
+#      src: ~/ansible/splunkapps/sh_init_clustering.tgz
+#      dest: /opt/splunk/etc/apps/sh_init_clustering.tgz
+#      backup: yes
+#      owner: splunk
+#      mode: '0755'
+#
+#  - name: Extract Search Head Clustering initialization app
+#    tags:
+#    - install
+#    shell: cd /opt/splunk/etc/apps/; tar -zxvf sh_init_clustering.tgz
+
+  - name: Adjust splunk folder permissions
+    tags:
+    - install
+    shell: sudo chown -R splunk. /opt/splunk/
+
+  - name: Restart Splunk Service
+    tags: 
+    - install
+    shell: /opt/splunk/bin/splunk restart

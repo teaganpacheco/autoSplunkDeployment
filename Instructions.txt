@@ -43,66 +43,69 @@ Splunk on GCP with Ansible
 // 16. Add the Splunk management combo box's internal IP address to the "autoSplunkDeployment/inventory/hosts" file under the '[management_combo]' group. Use to get the internal IP: 
   cd ~/autoSplunkDeployment; ansible-inventory -i inventory/mygcp.gcp.yml --graph 
 
-// 17. Configure the newly launched management box (splk-mgmt-00) with the 'base-mgmt.yml' playbook using: 
+// 17. Zip all the 'splunkapp' directories from the git pull with: 
+  cd ~/autoSplunkDeployment/splunkapps/; for dir in */; do tar zcf "${dir%/}.tgz" "$dir"; done
+
+// 18. Configure the newly launched management box (splk-mgmt-00) with the 'base-mgmt.yml' playbook using: 
   cd ~/autoSplunkDeployment; ansible-playbook -K splunk/dev/base-mgmt.yml 
 
-// 18. Prep the Splunk management combo box (splk-mgmt.yml) with the following command. This will prepare the Search Head and Indexer Cluster apps and subsequent deployments: 
+// 19. Prep the Splunk management combo box (splk-mgmt.yml) with the following command. This will prepare the Search Head and Indexer Cluster apps and subsequent deployments: 
   cd ~/autoSplunkDeployment; scripts/mgmt_scripts/clusteringSetup.sh
 
-// 19. Send the Splunk management combo box the necessary script to further prepare its various Splunk apps with: 
+// 20. Send the Splunk management combo box the necessary script to further prepare its various Splunk apps with: 
   scp -i ~/.ssh/ansible ~/autoSplunkDeployment/scripts/mgmt_scripts/mgmtSplkAppUpdate.sh splunk@<management_combo_ip>:/opt/splunk/etc/
 
-// 20. Still from the Ansible console server, run the following command to prepare such functions as licensing, outputs, and search head clustering: 
+// 21. Still from the Ansible console server, run the following command to prepare such functions as licensing, outputs, and search head clustering: 
   cd ~/autoSplunkDeployment; ansible management_combo -m shell -a "/opt/splunk/etc/mgmtSplkAppUpdate.sh; /opt/splunk/bin/splunk restart" 
 
-// 21. Launch the Indexer Cluster with: 
+// 22. Launch the Indexer Cluster with: 
   cd ~/autoSplunkDeployment; ansible-playbook -K gcp/dev/splk-idxcluster.yml 
 
-// 22. Add the Indexer's internal IP address to the "autoSplunkDeployment/inventory/hosts" file under the '[idx_cluster_members]' group. Use the same command as before to get the internal IP: 
+// 23. Add the Indexer's internal IP address to the "autoSplunkDeployment/inventory/hosts" file under the '[idx_cluster_members]' group. Use the same command as before to get the internal IP: 
   cd ~/autoSplunkDeployment; ansible-inventory -i inventory/mygcp.gcp.yml --graph 
 
-// 23. Configure the Indexer Cluster with: 
+// 24. Configure the Indexer Cluster with: 
   cd ~/autoSplunkDeployment; ansible-playbook -K splunk/dev/base-idx-cluster.yml 
 
-// 24. Deploy an Indexer Cluster rolling restart with: 
+// 25. Deploy an Indexer Cluster rolling restart with: 
   cd ~/autoSplunkDeployment; ansible management_combo -m shell -a "/opt/splunk/bin/splunk apply cluster-bundle --answer-yes -auth admin:sysadmin01"
 
-// 25. Launch the Search Head Cluster instances with: 
+// 26. Launch the Search Head Cluster instances with: 
   cd ~/autoSplunkDeployment; ansible-playbook -K gcp/dev/splk-shcluster.yml 
 
-// 26. Add the Search Heads' internal IP address to the "autoSplunkDeployment/inventory/hosts" file under the '[sh_cluster_members]' group to get the internal IP with: 
+// 27. Add the Search Heads' internal IP address to the "autoSplunkDeployment/inventory/hosts" file under the '[sh_cluster_members]' group to get the internal IP with: 
   cd ~/autoSplunkDeployment; ansible-inventory -i inventory/mygcp.gcp.yml --graph 
 
-// 27. Prep the Search Head Cluster members with the following command to prepare their initialization and bootstrap captain placement: 
+// 28. Prep the Search Head Cluster members with the following command to prepare their initialization and bootstrap captain placement: 
   cd ~/autoSplunkDeployment; scripts/mgmt_scripts/shCaptianList.sh 
 
-// 28. Configure the Search Head Cluster members with: 
+// 29. Configure the Search Head Cluster members with: 
   cd ~/autoSplunkDeployment; ansible-playbook -K splunk/dev/base-sh-cluster.yml 
 
-// 29. Send the Splunk Search Head Clustering Initialization the necessary script to further prepare its Clustering with: 
+// 30. Send the Splunk Search Head Clustering Initialization the necessary script to further prepare its Clustering with: 
   cd ~/autoSplunkDeployment; ansible sh_cluster_members -m copy -a "src=~/autoSplunkDeployment/scripts/mgmt_scripts/shClusterInit.sh dest=/opt/splunk/etc/shClusterInit.sh mode=0755"
 
-// 30. Still from the Ansible console server, run the following command to prepare such Search Head Clustering functions: 
+// 31. Still from the Ansible console server, run the following command to prepare such Search Head Clustering functions: 
   cd ~/autoSplunkDeployment; ansible sh_cluster_members -m shell -a "/opt/splunk/etc/shClusterInit.sh"
 
-// 31. Wait about three minutes for the Search Head Cluster to be established. 
+// 32. Wait about three minutes for the Search Head Cluster to be established. 
 
-// 32. Setup the Search Head Cluster captain with: 
+// 33. Setup the Search Head Cluster captain with: 
   cd ~/autoSplunkDeployment; ansible-playbook -K splunk/dev/sh-cluster-captain.yml 
 
-// 33. Wait another three minutes for the Search Head Cluster to stabalize. 
+// 34. Wait another three minutes for the Search Head Cluster to stabalize. 
 
-// 34. Deploy Search Head Cluster related apps in the Deployer with: 
+// 35. Deploy Search Head Cluster related apps in the Deployer with: 
   cd ~/autoSplunkDeployment; ansible management_combo -m shell -a "/opt/splunk/bin/splunk apply shcluster-bundle --answer-yes -target https://<management_combo_hostname>:8089 -auth admin:sysadmin01"
 
-// 35. Launch the the Linux-based Universal Forwarder VM instances with: 
+// 36. Launch the the Linux-based Universal Forwarder VM instances with: 
   cd ~/autoSplunkDeployment; ansible-playbook -K gcp/dev/splk-ufwdr.yml 
 
-// 36. Add the Universal Forwarders' internal IP address to the "autoSplunkDeployment/inventory/hosts" file under the '[uforwarders]' group. Use: 
+// 37. Add the Universal Forwarders' internal IP address to the "autoSplunkDeployment/inventory/hosts" file under the '[uforwarders]' group. Use: 
   cd ~/autoSplunkDeployment; ansible-inventory -i inventory/mygcp.gcp.yml --graph 
 
-// 37. Prep the Universal Forwarders' "z_deploymentclient" app with: 
+// 38. Prep the Universal Forwarders' "z_deploymentclient" app with: 
   cd ~/autoSplunkDeployment; scripts/mgmt_scripts/deploymentClientUpdate.sh
 
-// 38. Configure the Universal Forwarders with: 
+// 39. Configure the Universal Forwarders with: 
   cd ~/autoSplunkDeployment; ansible-playbook -K splunk/dev/base-ufwdr.yml 

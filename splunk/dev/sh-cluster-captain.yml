@@ -1,0 +1,23 @@
+---
+
+- hosts: sh_cluster_members
+  become: true
+  tasks:
+
+  - name: Enable search head clustering captian
+    tags:
+    - install
+    shell: h=$(cat /opt/splunk/new-tmpHosts.list); /opt/splunk/bin/splunk bootstrap shcluster-captain -servers_list $h -auth admin:sysadmin01
+    become: yes
+    become_user: splunk
+    run_once: true
+
+  - name: Adjust splunk folder permissions
+    tags:
+    - install
+    shell: sudo chown -R splunk. /opt/splunk/
+
+  - name: Restart Splunk Service
+    tags: 
+    - install
+    shell: /opt/splunk/bin/splunk restart

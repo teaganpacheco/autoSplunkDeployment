@@ -1,0 +1,61 @@
+---
+
+- hosts: uforwarders
+  become: true
+  tasks:
+
+  - name: Download Splunk Universal Forwarder Installation File
+    unarchive:
+      src: https://download.splunk.com/products/universalforwarder/releases/8.2.6.1/linux/splunkforwarder-8.2.6.1-5f0da8f6e22c-Linux-x86_64.tgz
+      dest: /opt/
+      remote_src: yes
+      owner: splunk
+      group: splunk
+      mode: 0755
+
+  - name: Copy default Splunk admin file with owner and permissions
+    copy:
+      src: ~/ansible/files/user-seed.conf
+      dest: /opt/splunkforwarder/etc/system/local/user-seed.conf
+      backup: yes
+      owner: splunk
+      mode: '0644'
+    register: userseedconf
+  
+  - name: Set Splunk User for Splunk Service
+    tags: 
+    - install
+    shell: cd /opt/splunkforwarder/etc; echo 'SPLUNK_OS_USER=splunk' >> splunk-launch.conf
+
+  - name: Accept License
+    tags: 
+    - install
+    shell: /opt/splunkforwarder/bin/splunk start --accept-license --answer-yes
+
+  - name: Enable init script
+    tags: 
+    - install
+    shell: /opt/splunkforwarder/bin/splunk enable boot-start 
+
+  - name: Copy z_deploymentclient app
+    copy:
+      src: ~/ansible/splunkapps/z_deploymentclient.tgz
+      dest: /opt/splunkforwarder/etc/apps/z_deploymentclient.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract z_deploymentclient app
+    tags: 
+    - install
+    shell: cd /opt/splunkforwarder/etc/apps/; tar -zxvf z_deploymentclient.tgz
+    
+  - name: Adjust splunk folder permissions
+    tags:
+    - install
+    shell: sudo chown -R splunk. /opt/splunkforwarder/
+
+  - name: Restart Splunk Service
+    tags: 
+    - install
+    shell: /opt/splunkforwarder/bin/splunk restart
