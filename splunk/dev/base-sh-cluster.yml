@@ -15,7 +15,7 @@
 
   - name: Copy default Splunk admin file with owner and permissions
     copy:
-      src: ~/ansible/files/user-seed.conf
+      src: ~/autoSplunkDeployment/files/user-seed.conf
       dest: /opt/splunk/etc/system/local/user-seed.conf
       backup: yes
       owner: splunk
@@ -39,14 +39,14 @@
     
   - name: copy host list to target
     copy:
-      src: ~/ansible/inventory/new-tmpHosts.list
+      src: ~/autoSplunkDeployment/inventory/new-tmpHosts.list
       dest: "/opt/splunk/new-tmpHosts.list"
       owner: splunk
       group: splunk
 
 #  - name: Copy Search Head Clustering initialization app
 #    copy: 
-#      src: ~/ansible/splunkapps/sh_init_clustering.tgz
+#      src: ~/autoSplunkDeployment/splunkapps/sh_init_clustering.tgz
 #      dest: /opt/splunk/etc/apps/sh_init_clustering.tgz
 #      backup: yes
 #      owner: splunk

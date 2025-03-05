@@ -15,7 +15,7 @@
 
   - name: Copy default Splunk admin file with owner and permissions
     copy:
-      src: ~/ansible/files/user-seed.conf
+      src: ~/autoSplunkDeployment/files/user-seed.conf
       dest: /opt/splunkforwarder/etc/system/local/user-seed.conf
       backup: yes
       owner: splunk
@@ -39,7 +39,7 @@
 
   - name: Copy z_deploymentclient app
     copy:
-      src: ~/ansible/splunkapps/z_deploymentclient.tgz
+      src: ~/autoSplunkDeployment/splunkapps/z_deploymentclient.tgz
       dest: /opt/splunkforwarder/etc/apps/z_deploymentclient.tgz
       backup: yes
       owner: splunk

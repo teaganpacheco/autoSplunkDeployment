@@ -15,7 +15,7 @@
 
   - name: Copy default Splunk admin file with owner and permissions
     copy:
-      src: ~/ansible/files/user-seed.conf
+      src: ~/autoSplunkDeployment/files/user-seed.conf
       dest: /opt/splunk/etc/system/local/user-seed.conf
       backup: yes
       owner: splunk
@@ -39,7 +39,7 @@
 
   - name: Copy Indexer Clustering app
     copy: 
-      src: ~/ansible/splunkapps/idx_clustering.tgz
+      src: ~/autoSplunkDeployment/splunkapps/idx_clustering.tgz
       dest: /opt/splunk/etc/apps/idx_clustering.tgz
       backup: yes
       owner: splunk
@@ -52,7 +52,7 @@
 
   - name: Copy Indexer No Splunk Web app
     copy: 
-      src: ~/ansible/splunkapps/idx_splunkweb.tgz
+      src: ~/autoSplunkDeployment/splunkapps/idx_splunkweb.tgz
       dest: /opt/splunk/etc/apps/idx_splunkweb.tgz
       backup: yes
       owner: splunk
