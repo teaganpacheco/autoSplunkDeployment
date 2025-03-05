@@ -9,7 +9,7 @@
   vars: 
     gcp_project: "nasdaqhigh-456-451020"
     gcp_cred_kind: "serviceaccount"
-    gcp_cred_file: "~/ansible/files/mygcpaccount.json"
+    gcp_cred_file: "~/autoSplunkDeployment/files/mygcpaccount.json"
     gcp_region: "us-south1"
     gcp_zone: "us-south1-a"
 

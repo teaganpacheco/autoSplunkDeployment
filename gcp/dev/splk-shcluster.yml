@@ -9,7 +9,7 @@
   vars: 
     gcp_project: "nasdaqhigh-456"
     gcp_cred_kind: "serviceaccount"
-    gcp_cred_file: "~/ansible/files/mygcpaccount.json"
+    gcp_cred_file: "~/autoSplunkDeployment/files/mygcpaccount.json"
     gcp_region: "us-central1"
     gcp_zone: "us-central1-a"
 
@@ -50,16 +50,6 @@
       service_account_file: "{{ gcp_cred_file }}"
       state: present
     register: disk3
-
-    #  - name: create a network
-    #  gcp_compute_network:
-    #  name: network-instance-02
-    #  auto_create_subnetworks: 'true'
-    #  project: "{{ gcp_project }}"
-    #  auth_kind: "{{ gcp_cred_kind }}"
-    #  service_account_file: "{{ gcp_cred_file }}"
-    #   state: present
-    #  register: network
 
   - name: create sh01 address
     gcp_compute_address:
