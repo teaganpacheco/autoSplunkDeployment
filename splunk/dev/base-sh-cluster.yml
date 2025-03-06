@@ -44,19 +44,6 @@
       owner: splunk
       group: splunk
 
-#  - name: Copy Search Head Clustering initialization app
-#    copy: 
-#      src: ~/autoSplunkDeployment/splunkapps/sh_init_clustering.tgz
-#      dest: /opt/splunk/etc/apps/sh_init_clustering.tgz
-#      backup: yes
-#      owner: splunk
-#      mode: '0755'
-#
-#  - name: Extract Search Head Clustering initialization app
-#    tags:
-#    - install
-#    shell: cd /opt/splunk/etc/apps/; tar -zxvf sh_init_clustering.tgz
-
   - name: Adjust splunk folder permissions
     tags:
     - install
