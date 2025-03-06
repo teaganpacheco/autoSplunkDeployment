@@ -17,4 +17,4 @@ sed -i "s/splk-asdf/$new_mgmt/" /opt/splunk/etc/deployment-apps/z_deploymentclie
 sed -i "s/splk-asdf/$new_mgmt/" /opt/splunk/etc/deployment-apps/all_outputs/local/outputs.conf
 sed -i "s/splk-asdf/$new_mgmt/" /opt/splunk/etc/deployment-apps/all_license/local/server.conf
 
-sed -i "s/splk-asdf/$new_mgmt/" /opt/splunk/etc/sh_init_clustering/bin/shClusteringInitialization.sh
+# sed -i "s/splk-asdf/$new_mgmt/" /opt/splunk/etc/sh_init_clustering/bin/shClusteringInitialization.sh

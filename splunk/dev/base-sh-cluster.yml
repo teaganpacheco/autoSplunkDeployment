@@ -44,6 +44,19 @@
       owner: splunk
       group: splunk
 
+  - name: Copy minDiskUsage app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/all_minDiskUsage.tgz
+      dest: /opt/splunk/etc/apps/all_minDiskUsage.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract minDiskUsage app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf all_minDiskUsage.tgz
+
   - name: Adjust splunk folder permissions
     tags:
     - install
