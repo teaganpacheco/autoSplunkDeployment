@@ -305,19 +305,6 @@
     - install
     shell: cd /opt/splunk/etc/shcluster/apps/; tar -zxvf sh_clustering.tgz
 
-  - name: Copy Search Head Clustering Initialization app
-    copy: 
-      src: ~/autoSplunkDeployment/splunkapps/sh_init_clustering.tgz
-      dest: /opt/splunk/etc/sh_init_clustering.tgz
-      backup: yes
-      owner: splunk
-      mode: '0755'
-
-  - name: Extract Search Head Clustering Initialization app
-    tags:
-    - install
-    shell: cd /opt/splunk/etc/; tar -zxvf sh_init_clustering.tgz
-
   - name: Copy SPLK ENT Licensing app
     copy: 
       src: ~/autoSplunkDeployment/splunkapps/all_license.tgz

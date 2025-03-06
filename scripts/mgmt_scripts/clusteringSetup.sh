@@ -16,6 +16,8 @@ sed -i "s/splk-asdf/$idx_cluster_manager/g" ~/autoSplunkDeployment/splunkapps/id
 
 sed -i "s/splk-asdf/$idx_cluster_manager/g" ~/autoSplunkDeployment/splunkapps/sh_clustering/default/server.conf
 
+sed -i "s/splk-asdf/$idx_cluster_manager/g" ~/autoSplunkDeployment/scripts/mgmt_scripts/shClusteringInit.sh
+
 cd ~/autoSplunkDeployment/splunkapps/
 
 rm idx_clustering.tgz
