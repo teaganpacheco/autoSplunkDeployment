@@ -57,6 +57,19 @@
     - install
     shell: cd /opt/splunk/etc/apps/; tar -zxvf all_minDiskUsage.tgz
 
+  - name: Copy Enable Splunk Web SSL app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/mgmt_splunkwebssl.tgz
+      dest: /opt/splunk/etc/apps/mgmt_splunkwebssl.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Enable Splunk Web SSL app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/apps/; tar -zxvf mgmt_splunkwebssl.tgz
+
   - name: Adjust splunk folder permissions
     tags:
     - install
