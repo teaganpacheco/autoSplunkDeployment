@@ -370,6 +370,19 @@
     - install
     shell: cd /opt/splunk/etc/shcluster/apps/; tar -zxvf Splunk_TA_nix.tgz
 
+  - name: Copy Enable Splunk Web SSL app
+    copy: 
+      src: ~/autoSplunkDeployment/splunkapps/mgmt_splunkwebssl.tgz
+      dest: /opt/splunk/etc/shcluster/apps/mgmt_splunkwebssl.tgz
+      backup: yes
+      owner: splunk
+      mode: '0755'
+
+  - name: Extract Enable Splunk Web SSL app
+    tags: 
+    - install
+    shell: cd /opt/splunk/etc/shcluster/apps/; tar -zxvf mgmt_splunkwebssl.tgz
+
 # Final commands
 
   - name: Adjust splunk folder permissions

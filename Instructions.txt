@@ -53,7 +53,7 @@ Splunk on GCP with Ansible
   cd ~/autoSplunkDeployment; ansible-playbook -K splunk/dev/base-mgmt.yml 
 
 // 19. Prep the Splunk management combo box (splk-mgmt.yml) with the following command. This will prepare the Search Head and Indexer Cluster apps and subsequent deployments: 
-  cd ~/autoSplunkDeployment; scripts/mgmt_scripts/clusteringSetup.sh
+  cd ~/autoSplunkDeployment; chmod -R a+x scripts/; scripts/mgmt_scripts/clusteringSetup.sh
 
 // 20. Send the Splunk management combo box the necessary script to further prepare its various Splunk apps with: 
   scp -i ~/.ssh/ansible ~/autoSplunkDeployment/scripts/mgmt_scripts/mgmtSplkAppUpdate.sh splunk@<management_combo_ip>:/opt/splunk/etc/
@@ -98,8 +98,11 @@ Splunk on GCP with Ansible
 
 // 34. Wait another three minutes for the Search Head Cluster to stabalize. 
 
+// 35. Restart the Splunkd service on the Search Head Cluster members. 
+  cd ~/autoSplunkDeployment; ansible sh_cluster_members -m shell -a "/opt/splunk/bin/splunk restart"
+
 // 35. Deploy Search Head Cluster related apps in the Deployer with: 
-  cd ~/autoSplunkDeployment; ansible management_combo -m shell -a "/opt/splunk/bin/splunk apply shcluster-bundle --answer-yes -target https://<management_combo_hostname>:8089 -auth admin:sysadmin01"
+  cd ~/autoSplunkDeployment; ansible management_combo -m shell -a "/opt/splunk/bin/splunk apply shcluster-bundle --answer-yes -target https://<sh_cluster_member_hostname>:8089 -auth admin:sysadmin01"
 
 // 36. Launch the the Linux-based Universal Forwarder VM instances with: 
   cd ~/autoSplunkDeployment; ansible-playbook -K gcp/dev/splk-ufwdr.yml 
